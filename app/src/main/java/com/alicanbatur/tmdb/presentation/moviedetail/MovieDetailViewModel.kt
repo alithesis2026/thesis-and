@@ -3,6 +3,7 @@ package com.alicanbatur.tmdb.presentation.moviedetail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alicanbatur.tmdb.BuildConfig
 import com.alicanbatur.tmdb.domain.model.Movie
 import com.alicanbatur.tmdb.domain.model.MovieDetail
 import com.alicanbatur.tmdb.domain.usecase.GetMovieDetailUseCase
@@ -22,7 +23,8 @@ data class MovieDetailUiState(
     val detail: MovieDetail? = null,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val trailerKey: String? = null
 )
 
 @HiltViewModel
@@ -73,6 +75,18 @@ class MovieDetailViewModel @Inject constructor(
         )
         viewModelScope.launch {
             toggleFavoriteUseCase(movie, _uiState.value.isFavorite)
+        }
+    }
+
+    fun loadTrailer() {
+        viewModelScope.launch {
+            val url = java.net.URL("https://api.themoviedb.org/3/movie/$movieId/videos")
+            val connection = url.openConnection() as java.net.HttpURLConnection
+            connection.setRequestProperty("Authorization", "Bearer ${BuildConfig.TMDB_API_READ_ACCESS_TOKEN}")
+            val body = runCatching { connection.inputStream.bufferedReader().readText() }.getOrNull()
+            connection.disconnect()
+            val key = body?.let { Regex("\"key\":\"(\\w+)\"").find(it)?.groupValues?.get(1) }
+            _uiState.update { it.copy(trailerKey = key) }
         }
     }
 }
