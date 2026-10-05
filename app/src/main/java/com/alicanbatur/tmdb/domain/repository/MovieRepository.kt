@@ -7,4 +7,5 @@ interface MovieRepository {
     suspend fun getPopularMovies(page: Int): Result<MoviePage>
     suspend fun getMovieDetail(id: Int): Result<MovieDetail>
     suspend fun searchMovies(query: String, page: Int): Result<MoviePage>
+    suspend fun prefetchNextPage(page: Int)
 }

@@ -25,6 +25,13 @@ class MovieRepositoryImpl @Inject constructor(
     override suspend fun searchMovies(query: String, page: Int): Result<MoviePage> = runCatching {
         apiService.searchMovies(query, page).toDomain()
     }
+
+    override suspend fun prefetchNextPage(page: Int) {
+        try {
+            apiService.getPopularMovies(page)
+        } catch (e: Exception) {
+        }
+    }
 }
 
 private fun MoviePageDto.toDomain(): MoviePage =
