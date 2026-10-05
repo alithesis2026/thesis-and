@@ -2,8 +2,8 @@ package com.alicanbatur.tmdb.presentation.movielist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alicanbatur.tmdb.data.repository.MovieRepositoryImpl
 import com.alicanbatur.tmdb.domain.model.Movie
-import com.alicanbatur.tmdb.domain.usecase.GetPopularMoviesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,7 +20,7 @@ data class MovieListUiState(
 
 @HiltViewModel
 class MovieListViewModel @Inject constructor(
-    private val getPopularMovies: GetPopularMoviesUseCase
+    private val movieRepository: MovieRepositoryImpl
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MovieListUiState())
@@ -55,7 +55,7 @@ class MovieListViewModel @Inject constructor(
         _uiState.update { it.copy(isLoading = currentPage == 0, errorMessage = null) }
 
         viewModelScope.launch {
-            getPopularMovies(currentPage + 1)
+            movieRepository.getPopularMovies(currentPage + 1)
                 .onSuccess { page ->
                     currentPage = page.page
                     totalPages = page.totalPages
