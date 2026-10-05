@@ -51,7 +51,7 @@ fun MovieDetailScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { viewModel.toggleFavorite() }) {
+                    IconButton(onClick = { if (uiState.detail?.title?.isNotEmpty() == true) viewModel.toggleFavorite() }) {
                         Icon(
                             imageVector = if (uiState.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                             contentDescription = "Favorilere ekle"
