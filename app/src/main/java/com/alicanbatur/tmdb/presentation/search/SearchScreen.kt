@@ -36,6 +36,7 @@ fun SearchScreen(
             onValueChange = viewModel::onQueryChanged,
             label = { Text("Film ara") },
             singleLine = true,
+            placeholder = { Text("örn. Inception") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
