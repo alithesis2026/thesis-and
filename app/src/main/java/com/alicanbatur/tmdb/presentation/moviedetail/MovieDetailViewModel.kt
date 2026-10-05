@@ -9,6 +9,7 @@ import com.alicanbatur.tmdb.domain.usecase.GetMovieDetailUseCase
 import com.alicanbatur.tmdb.domain.usecase.ObserveFavoriteStatusUseCase
 import com.alicanbatur.tmdb.domain.usecase.ToggleFavoriteUseCase
 import com.alicanbatur.tmdb.presentation.navigation.Destination
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -34,6 +35,7 @@ class MovieDetailViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val movieId: Int = checkNotNull(savedStateHandle[Destination.MovieDetail.ARG_MOVIE_ID])
+    val gson = Gson()
 
     private val _uiState = MutableStateFlow(MovieDetailUiState())
     val uiState: StateFlow<MovieDetailUiState> = _uiState.asStateFlow()
@@ -51,7 +53,10 @@ class MovieDetailViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, errorMessage = null) }
             getMovieDetail(movieId)
-                .onSuccess { detail -> _uiState.update { it.copy(detail = detail, isLoading = false) } }
+                .onSuccess { detail ->
+                    android.util.Log.d("MovieDetailViewModel", gson.toJson(detail))
+                    _uiState.update { it.copy(detail = detail, isLoading = false) }
+                }
                 .onFailure { error ->
                     _uiState.update {
                         it.copy(isLoading = false, errorMessage = error.message ?: "Beklenmeyen bir hata oluştu.")
