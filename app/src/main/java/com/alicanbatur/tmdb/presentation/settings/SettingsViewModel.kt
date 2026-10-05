@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alicanbatur.tmdb.domain.usecase.ClearFavoritesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -31,7 +32,8 @@ private object SettingsKeys {
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
+    private val clearFavoritesUseCase: ClearFavoritesUseCase
 ) : ViewModel() {
 
     val uiState: StateFlow<SettingsUiState> = dataStore.data
@@ -54,6 +56,12 @@ class SettingsViewModel @Inject constructor(
     fun setNotificationsEnabled(enabled: Boolean) {
         viewModelScope.launch {
             dataStore.edit { it[SettingsKeys.NOTIFICATIONS_ENABLED] = enabled }
+        }
+    }
+
+    fun clearFavorites() {
+        viewModelScope.launch {
+            clearFavoritesUseCase()
         }
     }
 }
