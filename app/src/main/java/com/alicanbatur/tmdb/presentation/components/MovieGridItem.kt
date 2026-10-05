@@ -12,8 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -26,14 +24,13 @@ fun MovieGridItem(movie: Movie, onClick: () -> Unit, modifier: Modifier = Modifi
     Column(modifier = modifier.clickable(onClick = onClick)) {
         AsyncImage(
             model = movie.posterPath?.let { "$IMAGE_BASE_URL$it" },
-            contentDescription = movie.title,
+            contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(2f / 3f)
                 .clip(RoundedCornerShape(8.dp))
                 .background(MaterialTheme.colorScheme.surfaceVariant)
-                .semantics { contentDescription = movie.title }
         )
         Text(
             text = movie.title,
