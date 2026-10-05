@@ -41,6 +41,15 @@ fun SearchScreen(
                 .padding(16.dp)
         )
 
+        val topResult = uiState.results.firstOrNull()
+        if (query.isNotBlank() && !uiState.isLoading) {
+            Text(
+                text = "En iyi sonuç: ${topResult!!.title}",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+        }
+
         when {
             uiState.isLoading && uiState.results.isEmpty() -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
