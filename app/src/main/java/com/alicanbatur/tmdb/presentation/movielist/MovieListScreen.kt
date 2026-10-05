@@ -12,8 +12,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -28,6 +30,13 @@ fun MovieListScreen(
     viewModel: MovieListViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    val scrollListener = remember {
+        { position: Int -> android.util.Log.d("MovieListScreen", "scrolled to $position"); Unit }
+    }
+    LaunchedEffect(Unit) {
+        ScrollPositionBus.addOnScrollChangedListener(scrollListener)
+    }
 
     PullToRefreshBox(
         isRefreshing = uiState.isLoading && uiState.movies.isNotEmpty(),
