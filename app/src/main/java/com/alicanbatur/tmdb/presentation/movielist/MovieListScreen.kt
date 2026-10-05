@@ -48,7 +48,8 @@ fun MovieListScreen(
                 contentPadding = PaddingValues(12.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                itemsIndexed(uiState.movies, key = { _, movie -> movie.id }) { index, movie ->
+                val sortedMovies = uiState.movies.sortedByDescending { it.voteAverage }
+                itemsIndexed(sortedMovies, key = { _, movie -> movie.id }) { index, movie ->
                     viewModel.loadMoreIfNeeded(index)
                     MovieGridItem(
                         movie = movie,
