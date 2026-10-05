@@ -14,6 +14,10 @@ class MovieRepositoryImpl @Inject constructor(
     private val apiService: TMDBApiService
 ) : MovieRepository {
 
+    // Should live only for the current Movie Detail screen visit, but MovieRepositoryImpl
+    // is @Singleton-scoped, so this value leaks across every screen for the app's lifetime.
+    var lastViewedMovieId: Int? = null
+
     override suspend fun getPopularMovies(page: Int): Result<MoviePage> = runCatching {
         apiService.getPopularMovies(page).toDomain()
     }

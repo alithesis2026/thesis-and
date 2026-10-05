@@ -3,6 +3,7 @@ package com.alicanbatur.tmdb.presentation.moviedetail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alicanbatur.tmdb.data.repository.MovieRepositoryImpl
 import com.alicanbatur.tmdb.domain.model.Movie
 import com.alicanbatur.tmdb.domain.model.MovieDetail
 import com.alicanbatur.tmdb.domain.usecase.GetMovieDetailUseCase
@@ -30,7 +31,8 @@ class MovieDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getMovieDetail: GetMovieDetailUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
-    observeFavoriteStatus: ObserveFavoriteStatusUseCase
+    observeFavoriteStatus: ObserveFavoriteStatusUseCase,
+    private val movieRepository: MovieRepositoryImpl
 ) : ViewModel() {
 
     private val movieId: Int = checkNotNull(savedStateHandle[Destination.MovieDetail.ARG_MOVIE_ID])
@@ -39,6 +41,7 @@ class MovieDetailViewModel @Inject constructor(
     val uiState: StateFlow<MovieDetailUiState> = _uiState.asStateFlow()
 
     init {
+        movieRepository.lastViewedMovieId = movieId
         load()
         viewModelScope.launch {
             observeFavoriteStatus(movieId).collect { isFavorite ->
