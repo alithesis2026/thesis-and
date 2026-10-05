@@ -16,6 +16,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -27,19 +30,10 @@ fun SearchScreen(
     onMovieClick: (Int) -> Unit,
     viewModel: SearchViewModel = hiltViewModel()
 ) {
-    val query by viewModel.query.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        OutlinedTextField(
-            value = query,
-            onValueChange = viewModel::onQueryChanged,
-            label = { Text("Film ara") },
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
+        SearchInputField(onSearch = viewModel::onQueryChanged)
 
         when {
             uiState.isLoading && uiState.results.isEmpty() -> {
@@ -70,4 +64,22 @@ fun SearchScreen(
             }
         }
     }
+}
+
+@Composable
+private fun SearchInputField(onSearch: (String) -> Unit) {
+    var localQuery by remember { mutableStateOf("") }
+
+    OutlinedTextField(
+        value = localQuery,
+        onValueChange = { text ->
+            localQuery = text
+            onSearch(text)
+        },
+        label = { Text("Film ara") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+    )
 }
