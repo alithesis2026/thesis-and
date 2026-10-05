@@ -48,6 +48,13 @@ class MovieListViewModel @Inject constructor(
         loadNextPage()
     }
 
+    fun filter(query: String) {
+        currentPage = 0
+        totalPages = 1
+        _uiState.update { it.copy(movies = emptyList()) }
+        loadNextPage()
+    }
+
     private fun loadNextPage() {
         val hasMorePages = currentPage < totalPages
         if (isFetching || (currentPage != 0 && !hasMorePages)) return
