@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -29,6 +30,7 @@ fun SearchScreen(
 ) {
     val query by viewModel.query.collectAsState()
     val uiState by viewModel.uiState.collectAsState()
+    val recentQueries by viewModel.recentQueries.observeAsState(emptyList())
 
     Column(modifier = Modifier.fillMaxSize()) {
         OutlinedTextField(
@@ -40,6 +42,14 @@ fun SearchScreen(
                 .fillMaxWidth()
                 .padding(16.dp)
         )
+
+        if (recentQueries.isNotEmpty()) {
+            Text(
+                text = "Son aramalar: ${recentQueries.joinToString(", ")}",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+        }
 
         when {
             uiState.isLoading && uiState.results.isEmpty() -> {

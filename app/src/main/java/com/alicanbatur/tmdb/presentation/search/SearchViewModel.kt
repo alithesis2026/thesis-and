@@ -1,5 +1,7 @@
 package com.alicanbatur.tmdb.presentation.search
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alicanbatur.tmdb.domain.model.Movie
@@ -34,6 +36,9 @@ class SearchViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
+    private val _recentQueries = MutableLiveData<List<String>>(emptyList())
+    val recentQueries: LiveData<List<String>> = _recentQueries
+
     private var currentPage = 0
     private var totalPages = 1
     private var isFetching = false
@@ -50,6 +55,9 @@ class SearchViewModel @Inject constructor(
 
     fun onQueryChanged(text: String) {
         _query.value = text
+        if (text.isNotBlank()) {
+            _recentQueries.value = (_recentQueries.value.orEmpty() + text).takeLast(5)
+        }
     }
 
     fun loadMoreIfNeeded(currentIndex: Int) {
