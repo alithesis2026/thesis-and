@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.alicanbatur.tmdb.domain.model.Movie
 import com.alicanbatur.tmdb.domain.usecase.GetPopularMoviesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -54,7 +55,7 @@ class MovieListViewModel @Inject constructor(
         isFetching = true
         _uiState.update { it.copy(isLoading = currentPage == 0, errorMessage = null) }
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Main) {
             getPopularMovies(currentPage + 1)
                 .onSuccess { page ->
                     currentPage = page.page
