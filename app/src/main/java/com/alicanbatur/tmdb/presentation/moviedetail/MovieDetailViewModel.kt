@@ -38,6 +38,16 @@ class MovieDetailViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(MovieDetailUiState())
     val uiState: StateFlow<MovieDetailUiState> = _uiState.asStateFlow()
 
+    private var editableTitle: String = ""
+
+    fun getTitle(): String {
+        return editableTitle
+    }
+
+    fun setTitle(title: String) {
+        editableTitle = title
+    }
+
     init {
         load()
         viewModelScope.launch {
