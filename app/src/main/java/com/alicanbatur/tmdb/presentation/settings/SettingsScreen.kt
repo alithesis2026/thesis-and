@@ -87,5 +87,19 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
         ) {
             Text("Görsel önbelleğini temizle")
         }
+
+        Button(
+            onClick = {
+                context.getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+                    .edit().clear().apply()
+                context.deleteDatabase("tmdb-movie-app.db")
+                val imageLoader = Coil.imageLoader(context)
+                imageLoader.memoryCache?.clear()
+                imageLoader.diskCache?.clear()
+            },
+            modifier = Modifier.padding(top = 8.dp)
+        ) {
+            Text("Tüm verileri sıfırla")
+        }
     }
 }
