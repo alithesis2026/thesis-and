@@ -36,7 +36,7 @@ class MovieListViewModel @Inject constructor(
 
     fun loadMoreIfNeeded(currentIndex: Int) {
         val hasMorePages = currentPage < totalPages
-        if (currentIndex >= _uiState.value.movies.size - 5 && hasMorePages && !isFetching) {
+        if (currentIndex >= _uiState.value.movies.size - 3 && hasMorePages && !isFetching) {
             loadNextPage()
         }
     }
