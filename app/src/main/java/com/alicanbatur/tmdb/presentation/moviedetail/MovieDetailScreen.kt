@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -29,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.alicanbatur.tmdb.domain.model.MovieDetail
-import com.alicanbatur.tmdb.presentation.components.DateFormatterUtils
 
 private const val IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"
 
@@ -73,14 +73,18 @@ fun MovieDetailScreen(
                 }
             }
             uiState.detail != null -> {
-                MovieDetailContent(detail = uiState.detail!!, modifier = Modifier.padding(innerPadding))
+                MovieDetailContent(
+                    detail = uiState.detail!!,
+                    onAddFavoriteClick = { viewModel.toggleFavorite() },
+                    modifier = Modifier.padding(innerPadding)
+                )
             }
         }
     }
 }
 
 @Composable
-private fun MovieDetailContent(detail: MovieDetail, modifier: Modifier = Modifier) {
+private fun MovieDetailContent(detail: MovieDetail, onAddFavoriteClick: () -> Unit, modifier: Modifier = Modifier) {
     LazyColumn(modifier = modifier.fillMaxSize()) {
         item {
             AsyncImage(
@@ -106,7 +110,7 @@ private fun MovieDetailContent(detail: MovieDetail, modifier: Modifier = Modifie
 
                 val metaParts = buildList {
                     add("★ ${String.format("%.1f", detail.voteAverage)}")
-                    detail.releaseDate?.takeIf { it.isNotEmpty() }?.let { add(DateFormatterUtils.displayString(fromApiDate = it)) }
+                    detail.releaseDate?.takeIf { it.isNotEmpty() }?.let { add(it) }
                     detail.runtime?.let { add("$it dk") }
                     if (detail.genres.isNotEmpty()) add(detail.genres.joinToString(", "))
                 }
@@ -121,6 +125,10 @@ private fun MovieDetailContent(detail: MovieDetail, modifier: Modifier = Modifie
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(top = 12.dp)
                 )
+
+                Button(onClick = onAddFavoriteClick, modifier = Modifier.padding(top = 12.dp)) {
+                    Text("Add to Favorites")
+                }
             }
         }
     }
