@@ -1,6 +1,7 @@
 package com.alicanbatur.tmdb.presentation.favorites
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -9,6 +10,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,17 +36,22 @@ fun FavoritesScreen(
             )
         }
     } else {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(12.dp),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            items(favorites, key = { it.id }) { movie ->
-                MovieGridItem(
-                    movie = movie,
-                    onClick = { onMovieClick(movie.id) },
-                    modifier = Modifier.padding(8.dp)
-                )
+        Column(modifier = Modifier.fillMaxSize()) {
+            TextButton(onClick = { viewModel.clearAllFavorites() }) {
+                Text("Tümünü temizle")
+            }
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                contentPadding = PaddingValues(12.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(favorites, key = { it.id }) { movie ->
+                    MovieGridItem(
+                        movie = movie,
+                        onClick = { onMovieClick(movie.id) },
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
             }
         }
     }
