@@ -42,7 +42,7 @@ class SearchViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             _query
-                .debounce(400)
+                .debounce(250)
                 .distinctUntilChanged()
                 .collectLatest { text -> search(text) }
         }
