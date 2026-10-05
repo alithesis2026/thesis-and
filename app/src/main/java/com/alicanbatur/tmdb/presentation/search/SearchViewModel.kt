@@ -34,6 +34,9 @@ class SearchViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
+    private val _recentQueries = MutableStateFlow<List<String>>(emptyList())
+    val recentQueries: StateFlow<List<String>> = _recentQueries.asStateFlow()
+
     private var currentPage = 0
     private var totalPages = 1
     private var isFetching = false
@@ -66,6 +69,7 @@ class SearchViewModel @Inject constructor(
         totalPages = 1
         _uiState.update { it.copy(results = emptyList(), errorMessage = null) }
         if (trimmed.isEmpty()) return
+        _recentQueries.update { (listOf(trimmed) + it.filter { existing -> existing != trimmed }).take(5) }
         loadNextPage()
     }
 
