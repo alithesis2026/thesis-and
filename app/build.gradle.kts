@@ -8,8 +8,8 @@ plugins {
     alias(libs.plugins.hilt)
 }
 
-val workspaceEnv = Properties().apply {
-    val file = rootProject.file("../.env")
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
     if (file.exists()) {
         load(file.inputStream())
     }
@@ -28,7 +28,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        val tmdbToken = workspaceEnv.getProperty("TMDB_API_READ_ACCESS_TOKEN") ?: ""
+        val tmdbToken = localProperties.getProperty("TMDB_API_READ_ACCESS_TOKEN") ?: ""
         buildConfigField("String", "TMDB_API_READ_ACCESS_TOKEN", "\"$tmdbToken\"")
     }
 
@@ -58,6 +58,7 @@ kotlin {
 
 dependencies {
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
