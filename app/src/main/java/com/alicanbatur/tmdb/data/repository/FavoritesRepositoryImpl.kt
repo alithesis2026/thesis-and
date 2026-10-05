@@ -33,6 +33,10 @@ class FavoritesRepositoryImpl @Inject constructor(
             )
         }
     }
+
+    override suspend fun clearAll() {
+        dao.deleteAll()
+    }
 }
 
 private fun FavoriteMovieEntity.toDomain(): Movie =
