@@ -33,6 +33,8 @@ class FavoritesRepositoryImpl @Inject constructor(
             )
         }
     }
+
+    override suspend fun favoritesCount(): Int = dao.count()
 }
 
 private fun FavoriteMovieEntity.toDomain(): Movie =

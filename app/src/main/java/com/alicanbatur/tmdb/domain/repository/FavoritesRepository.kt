@@ -7,4 +7,5 @@ interface FavoritesRepository {
     fun observeFavorites(): Flow<List<Movie>>
     fun observeIsFavorite(movieId: Int): Flow<Boolean>
     suspend fun toggleFavorite(movie: Movie, isCurrentlyFavorite: Boolean)
+    suspend fun favoritesCount(): Int
 }
