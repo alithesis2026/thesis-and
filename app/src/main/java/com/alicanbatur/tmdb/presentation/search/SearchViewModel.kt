@@ -81,16 +81,27 @@ class SearchViewModel @Inject constructor(
                 if (query == activeQuery) {
                     currentPage = page.page
                     totalPages = page.totalPages
-                    _uiState.update { it.copy(results = it.results + page.movies, isLoading = false) }
+                    val combinedResults = _uiState.value.results + page.movies
+                    if (combinedResults.isEmpty()) {
+                        handleEmptyResult()
+                    } else {
+                        _uiState.update { it.copy(results = combinedResults, isLoading = false) }
+                    }
                 }
             }
             .onFailure { error ->
                 if (query == activeQuery) {
-                    _uiState.update {
-                        it.copy(isLoading = false, errorMessage = error.message ?: "Beklenmeyen bir hata oluştu.")
-                    }
+                    handleError(error.message ?: "Beklenmeyen bir hata oluştu.")
                 }
             }
         isFetching = false
+    }
+
+    private fun handleEmptyResult() {
+        _uiState.update { it.copy(isLoading = false, errorMessage = "Sonuç bulunamadı") }
+    }
+
+    private fun handleError(message: String) {
+        _uiState.update { it.copy(isLoading = false, errorMessage = message) }
     }
 }
