@@ -28,6 +28,8 @@ class SearchViewModel @Inject constructor(
     private val searchMovies: SearchMoviesUseCase
 ) : ViewModel() {
 
+    private val repo = SearchRepository()
+
     private val _query = MutableStateFlow("")
     val query: StateFlow<String> = _query.asStateFlow()
 
@@ -50,6 +52,9 @@ class SearchViewModel @Inject constructor(
 
     fun onQueryChanged(text: String) {
         _query.value = text
+        if (text.length >= 3) {
+            viewModelScope.launch { runCatching { repo.quickSearch(text) } }
+        }
     }
 
     fun loadMoreIfNeeded(currentIndex: Int) {
