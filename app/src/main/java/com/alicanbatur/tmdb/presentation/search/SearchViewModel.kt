@@ -19,7 +19,8 @@ import javax.inject.Inject
 data class SearchUiState(
     val results: List<Movie> = emptyList(),
     val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val sortByRating: Boolean = false
 )
 
 @OptIn(FlowPreview::class)
@@ -38,6 +39,7 @@ class SearchViewModel @Inject constructor(
     private var totalPages = 1
     private var isFetching = false
     private var activeQuery = ""
+    private var unsortedResults: List<Movie> = emptyList()
 
     init {
         viewModelScope.launch {
@@ -59,11 +61,26 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    fun toggleSortByRating() {
+        _uiState.update { it.copy(sortByRating = !it.sortByRating) }
+        applySorting()
+    }
+
+    private fun applySorting() {
+        val sorted = if (_uiState.value.sortByRating) {
+            unsortedResults.sortedByDescending { it.voteAverage }
+        } else {
+            unsortedResults
+        }
+        _uiState.update { it.copy(results = sorted) }
+    }
+
     private suspend fun search(text: String) {
         val trimmed = text.trim()
         activeQuery = trimmed
         currentPage = 0
         totalPages = 1
+        unsortedResults = emptyList()
         _uiState.update { it.copy(results = emptyList(), errorMessage = null) }
         if (trimmed.isEmpty()) return
         loadNextPage()
@@ -81,7 +98,9 @@ class SearchViewModel @Inject constructor(
                 if (query == activeQuery) {
                     currentPage = page.page
                     totalPages = page.totalPages
-                    _uiState.update { it.copy(results = it.results + page.movies, isLoading = false) }
+                    unsortedResults = unsortedResults + page.movies
+                    applySorting()
+                    _uiState.update { it.copy(isLoading = false) }
                 }
             }
             .onFailure { error ->
