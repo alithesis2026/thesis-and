@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 import javax.inject.Inject
 
 data class SearchUiState(
@@ -21,6 +23,13 @@ data class SearchUiState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null
 )
+
+fun formatReleaseDate(apiDate: String): String {
+    val input = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    val output = SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
+    val date = runCatching { input.parse(apiDate) }.getOrNull() ?: return apiDate
+    return output.format(date)
+}
 
 @OptIn(FlowPreview::class)
 @HiltViewModel
