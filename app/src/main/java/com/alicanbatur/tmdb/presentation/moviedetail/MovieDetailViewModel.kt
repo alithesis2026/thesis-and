@@ -22,7 +22,8 @@ data class MovieDetailUiState(
     val detail: MovieDetail? = null,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
-    val isFavorite: Boolean = false
+    val isFavorite: Boolean = false,
+    val trailerKey: String? = null
 )
 
 @HiltViewModel
@@ -40,6 +41,7 @@ class MovieDetailViewModel @Inject constructor(
 
     init {
         load()
+        loadTrailer()
         viewModelScope.launch {
             observeFavoriteStatus(movieId).collect { isFavorite ->
                 _uiState.update { it.copy(isFavorite = isFavorite) }
@@ -74,5 +76,10 @@ class MovieDetailViewModel @Inject constructor(
         viewModelScope.launch {
             toggleFavoriteUseCase(movie, _uiState.value.isFavorite)
         }
+    }
+
+    fun loadTrailer() {
+        val detail = _uiState.value.detail ?: return
+        _uiState.update { it.copy(trailerKey = "search:${detail.title}") }
     }
 }
