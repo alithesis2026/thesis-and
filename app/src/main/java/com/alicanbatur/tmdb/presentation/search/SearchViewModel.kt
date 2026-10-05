@@ -59,6 +59,14 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    fun searchSuggestionTapped(suggestion: String) {
+        activeQuery = suggestion
+        currentPage = 0
+        totalPages = 1
+        _uiState.update { it.copy(results = emptyList()) }
+        viewModelScope.launch { loadNextPage() }
+    }
+
     private suspend fun search(text: String) {
         val trimmed = text.trim()
         activeQuery = trimmed
