@@ -2,12 +2,14 @@ package com.alicanbatur.tmdb.presentation.movielist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alicanbatur.tmdb.data.local.FavoriteMovieDao
 import com.alicanbatur.tmdb.domain.model.Movie
 import com.alicanbatur.tmdb.domain.usecase.GetPopularMoviesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -15,12 +17,14 @@ import javax.inject.Inject
 data class MovieListUiState(
     val movies: List<Movie> = emptyList(),
     val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val favoriteIds: Set<Int> = emptySet()
 )
 
 @HiltViewModel
 class MovieListViewModel @Inject constructor(
-    private val getPopularMovies: GetPopularMoviesUseCase
+    private val getPopularMovies: GetPopularMoviesUseCase,
+    private val favoriteMovieDao: FavoriteMovieDao
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(MovieListUiState())
@@ -32,6 +36,11 @@ class MovieListViewModel @Inject constructor(
 
     init {
         loadNextPage()
+        viewModelScope.launch {
+            favoriteMovieDao.observeAll().collect { favorites ->
+                _uiState.update { it.copy(favoriteIds = favorites.map { entity -> entity.id }.toSet()) }
+            }
+        }
     }
 
     fun loadMoreIfNeeded(currentIndex: Int) {
