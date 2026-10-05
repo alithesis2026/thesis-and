@@ -4,6 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.alicanbatur.tmdb.domain.model.Movie
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import com.alicanbatur.tmdb.domain.model.MovieDetail
 import com.alicanbatur.tmdb.domain.usecase.GetMovieDetailUseCase
 import com.alicanbatur.tmdb.domain.usecase.ObserveFavoriteStatusUseCase
@@ -60,6 +62,7 @@ class MovieDetailViewModel @Inject constructor(
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun toggleFavorite() {
         val detail = _uiState.value.detail ?: return
         val movie = Movie(
@@ -71,7 +74,7 @@ class MovieDetailViewModel @Inject constructor(
             voteAverage = detail.voteAverage,
             releaseDate = detail.releaseDate
         )
-        viewModelScope.launch {
+        GlobalScope.launch {
             toggleFavoriteUseCase(movie, _uiState.value.isFavorite)
         }
     }
