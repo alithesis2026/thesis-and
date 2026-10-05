@@ -25,11 +25,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.alicanbatur.tmdb.domain.model.MovieDetail
-import com.alicanbatur.tmdb.presentation.components.DateFormatterUtils
 
 private const val IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500"
 
@@ -40,6 +40,11 @@ fun MovieDetailScreen(
     viewModel: MovieDetailViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    uiState.detail?.let { detail ->
+        RecentlyViewedTracker.getInstance(context).track(detail.id)
+    }
 
     Scaffold(
         topBar = {
@@ -106,7 +111,7 @@ private fun MovieDetailContent(detail: MovieDetail, modifier: Modifier = Modifie
 
                 val metaParts = buildList {
                     add("★ ${String.format("%.1f", detail.voteAverage)}")
-                    detail.releaseDate?.takeIf { it.isNotEmpty() }?.let { add(DateFormatterUtils.displayString(fromApiDate = it)) }
+                    detail.releaseDate?.takeIf { it.isNotEmpty() }?.let { add(it) }
                     detail.runtime?.let { add("$it dk") }
                     if (detail.genres.isNotEmpty()) add(detail.genres.joinToString(", "))
                 }
